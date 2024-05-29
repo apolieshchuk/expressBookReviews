@@ -4,6 +4,15 @@ let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
 
+// async cb function
+const getAllBooks = async () => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(books)
+        }, 2000)
+    })
+}
+
 
 public_users.post("/register", (req,res) => {
   //Write your code here
@@ -23,7 +32,7 @@ public_users.post("/register", (req,res) => {
 // Get the book list available in the shop
 public_users.get('/',async function (req, res) {
   //Write your code here
-  const booksResponse = await books;
+  const booksResponse = await getAllBooks();
   return res.send(JSON.stringify(booksResponse,null,4));
 });
 
@@ -31,34 +40,32 @@ public_users.get('/',async function (req, res) {
 public_users.get('/isbn/:isbn',async function (req, res) {
   //Write your code here
   const isbn = req.params.isbn;
-  const booksResponse = await books;
+  const booksResponse = await getAllBooks();
   return res.send(booksResponse[isbn])
  });
   
 // Get book details based on author
 public_users.get('/author/:author',async function (req, res) {
   //Write your code here
-  const booksResponse = await books;
-  return res.send(
-    Object.keys(booksResponse).filter((isbn) => {
-      return booksResponse[isbn].author === req.params.author
-    }).map((isbn) => {
-      return booksResponse[isbn]
-    })
-  )
+  const booksResponse = await getAllBooks();
+  const booksbyauthor = Object.keys(booksResponse).filter((isbn) => {
+    return booksResponse[isbn].author === req.params.author
+  }).map((isbn) => {
+    return booksResponse[isbn]
+  })
+  res.send({ booksbyauthor })
 });
 
 // Get all books based on title
 public_users.get('/title/:title',async function (req, res) {
   //Write your code here
-  const booksResponse = await books;
-  return res.send(
-      Object.keys(booksResponse).filter((isbn) => {
-        return booksResponse[isbn].title === req.params.title
-      }).map((isbn) => {
-        return booksResponse[isbn]
-      })
-  )
+  const booksResponse = await getAllBooks();
+  const booksbytitle = Object.keys(booksResponse).filter((isbn) => {
+    return booksResponse[isbn].title === req.params.title
+  }).map((isbn) => {
+    return booksResponse[isbn]
+  })
+  res.send({ booksbytitle })
 });
 
 //  Get book review
